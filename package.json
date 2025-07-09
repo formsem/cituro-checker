@@ -2,8 +2,11 @@
   "name": "cituro-checker",
   "version": "1.0.0",
   "main": "check-cituro.js",
-  "scripts": { "start": "node check-cituro.js" },
+  "scripts": {
+    "start": "node check-cituro.js"
+  },
   "dependencies": {
+    "express": "^4.18.2",
     "nodemailer": "^6.9.1",
     "puppeteer": "^21.6.1"
   }
