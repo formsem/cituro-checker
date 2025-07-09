@@ -1,88 +1,83 @@
-const puppeteer = require("puppeteer");
-const nodemailer = require("nodemailer");
+const express = require('express');
+const puppeteer = require('puppeteer');
+const nodemailer = require('nodemailer');
 
-const EMAIL = "jo.enr.kus@gmail.com";
-const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD; // simpan di Railway Secret
+const app = express();
+
+const EMAIL = process.env.EMAIL_ADDRESS;
+const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD;
 
 async function checkCituro() {
-  const browser = await puppeteer.launch({ headless: "new" });
+  const browser = await puppeteer.launch({
+    headless: "new",
+    args: ['--no-sandbox', '--disable-setuid-sandbox']
+  });
   const page = await browser.newPage();
 
   try {
-    // Step 1: Pilih Trainer
-    await page.goto("https://app.cituro.com/booking/bev#step=1", {
-      waitUntil: "networkidle2",
-    });
-
-    await page.waitForSelector(
-      "div.ServiceEntryView.selection-widget-base[id^='service-11ec1f7e7f410328b47ffd8fd0d1405a'] button.add-toggle",
-      { timeout: 10000 }
-    );
+    await page.goto("https://app.cituro.com/booking/bev#step=1", { waitUntil: "networkidle2" });
     await page.click(
       "div.ServiceEntryView.selection-widget-base[id^='service-11ec1f7e7f410328b47ffd8fd0d1405a'] button.add-toggle"
     );
-
-    console.log("✅ Trainer ausgewählt");
+    console.log("Trainer selected");
     await page.waitForTimeout(2000);
 
-    // Step 2: Cek Appointment
     await page.goto("https://app.cituro.com/booking/bev#step=2");
     await page.waitForTimeout(3000);
 
-    const kosong = await page.$("div.emptysuggestion-container");
-    if (kosong) {
-      console.log("⛔ Tidak ada appointment baru");
+    const noSlot = await page.$("div.emptysuggestion-container");
+    if (noSlot) {
+      console.log("No new appointment");
       await browser.close();
-      return;
+      return false;
     }
 
-    const eventButtons = await page.$$("button.GroupEventSuggestionWidget");
+    const events = await page.$$eval("button.GroupEventSuggestionWidget", els =>
+      els.map(el => el.innerText.replace(/\n/g, " | "))
+    );
 
-    if (eventButtons.length > 0) {
-      console.log("✅ Ditemukan appointment baru:");
-      const eventList = [];
-
-      for (let i = 0; i < eventButtons.length; i++) {
-        const text = await eventButtons[i].evaluate((el) => el.innerText);
-        console.log(`- ${text}`);
-        eventList.push(text);
-      }
-
-      await sendEmail(eventList);
+    if (events.length > 0) {
+      console.log("New appointments found:");
+      events.forEach((e, i) => console.log(`${i + 1}. ${e}`));
+      await sendEmail(events);
+      await browser.close();
+      return true;
     } else {
-      console.log("⛔ Tidak ada appointment yang bisa dibooking");
+      console.log("No bookable appointments");
+      await browser.close();
+      return false;
     }
-  } catch (e) {
-    console.error("❌ ERROR:", e.message);
-  } finally {
+  } catch (err) {
+    console.error("Error:", err.message);
     await browser.close();
+    return false;
   }
 }
 
 async function sendEmail(events) {
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: EMAIL,
-      pass: EMAIL_PASSWORD,
-    },
+  let transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: { user: EMAIL, pass: EMAIL_PASSWORD },
   });
 
-  const content = events.map((e, i) => `${i + 1}. ${e.replace("\n", " | ")}`).join("\n");
+  const body = events.map((e, i) => `${i + 1}. ${e}`).join('\n');
 
-  const mailOptions = {
+  let info = await transporter.sendMail({
     from: EMAIL,
     to: EMAIL,
-    subject: "Trainer verfügbar auf Cituro",
-    text: `Termine:\n\n${content}`,
-  };
+    subject: "Cituro Appointment Available",
+    text: `New appointments:\n\n${body}`,
+  });
 
-  try {
-    await transporter.sendMail(mailOptions);
-    console.log("📧 Email dikirim!");
-  } catch (err) {
-    console.error("❌ Gagal kirim email:", err.message);
-  }
+  console.log("Email sent:", info.messageId);
 }
 
-checkCituro();
+app.get('/', async (req, res) => {
+  const result = await checkCituro();
+  res.send(result ? "Appointment found and email sent." : "No appointments found.");
+});
+
+const port = process.env.PORT || 8080;
+app.listen(port, () => {
+  console.log(`Listening on port ${port}`);
+});
