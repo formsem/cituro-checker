@@ -1,0 +1,7 @@
+services:
+  - type: cron
+    name: cituro-checker-cron
+    env: docker
+    schedule: "*/15 * * * *"
+    dockerContext: .
+    dockerfilePath: ./Dockerfile
