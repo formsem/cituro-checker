@@ -1,8 +1,6 @@
 {
   "name": "cituro-checker",
   "version": "1.0.0",
-  "description": "Checker otomatis Cituro Kalender",
-  "main": "check-cituro.js",
   "scripts": {
     "start": "./start.sh"
   },
