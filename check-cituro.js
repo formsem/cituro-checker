@@ -2,8 +2,8 @@ import puppeteer from 'puppeteer';
 import nodemailer from 'nodemailer';
 
 // Konfigurasi Email
-const EMAIL_ADDRESS = 'jo.enr.kus@gmail.com';
-const EMAIL_PASSWORD = 'hzpe dobn kkva bsic'; // App Password Google
+const EMAIL_ADDRESS = process.env.EMAIL_ADDRESS || 'jo.enr.kus@gmail.com';
+const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD || 'hzpe dobn kkva bsic';
 
 // Fungsi delay
 async function delay(ms) {
