@@ -1,22 +1,26 @@
-FROM node:20-bullseye
+FROM node:18-slim
 
-# Install Chrome Latest
-RUN apt-get update && \
-    apt-get install -y wget && \
-    wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && \
-    apt install -y ./google-chrome-stable_current_amd64.deb && \
-    rm google-chrome-stable_current_amd64.deb
+# Install latest Chrome dependencies
+RUN apt-get update \
+    && apt-get install -y wget gnupg \
+    && wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
+    && sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' \
+    && apt-get update \
+    && apt-get install -y google-chrome-stable fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-khmeros fonts-kacst fonts-freefont-ttf libxss1 \
+    --no-install-recommends \
+    && rm -rf /var/lib/apt/lists/*
 
-# Verifikasi
-RUN ls -la /usr/bin/google-chrome* && \
-    google-chrome --version && \
-    which google-chrome
+# Set Puppeteer config
+ENV PUPPETEER_EXECUTABLE_PATH="/usr/bin/google-chrome-stable"
 
-ENV PUPPETEER_EXECUTABLE_PATH="/usr/bin/google-chrome"
+WORKDIR /usr/src/app
 
-WORKDIR /app
 COPY package*.json ./
+
 RUN npm install
+
 COPY . .
 
-CMD ["node", "check-cituro.js"]
+EXPOSE 3000
+
+CMD ["npm", "start"]
