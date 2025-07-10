@@ -1,8 +1,9 @@
 {
+  "type": "module",
   "name": "cituro-checker",
   "version": "1.0.0",
   "scripts": {
-    "start": "./start.sh"
+    "start": "node check-cituro.js"
   },
   "dependencies": {
     "puppeteer": "^22.9.1",
