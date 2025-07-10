@@ -1,12 +1,17 @@
 {
-  "type": "module",
   "name": "cituro-checker",
   "version": "1.0.0",
+  "main": "check-cituro.js",
+  "type": "module",
   "scripts": {
-    "start": "node check-cituro.js"
+    "start": "node check-cituro.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "puppeteer": "^22.9.1",
-    "nodemailer": "^6.9.1"
+    "nodemailer": "^6.9.1",
+    "puppeteer": "^24.12.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
