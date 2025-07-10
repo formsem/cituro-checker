@@ -1,8 +1,5 @@
 #!/bin/bash
-while true
-do
-  echo "Menjalankan pengecekan Cituro..."
-  node check-cituro.js
-  echo "Tunggu 2 menit..."
-  sleep 120
-done
+
+echo "Menjalankan pengecekan Cituro..."
+npx puppeteer browsers install chrome
+node check-cituro.js
