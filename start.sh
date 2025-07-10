@@ -1,6 +1,6 @@
 #!/bin/bash
 
 echo "Menjalankan pengecekan Cituro..."
-npx puppeteer browsers install chrome
-npx puppeteer install chromium
+npm puppeteer browsers install chrome
+npm puppeteer install chromium
 node check-cituro.js
