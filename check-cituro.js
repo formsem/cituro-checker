@@ -1,6 +1,10 @@
 import puppeteer from 'puppeteer';
 import nodemailer from 'nodemailer';
 
+// Di awal check-cituro.js
+console.log('Chromium Path:', process.env.PUPPETEER_EXECUTABLE_PATH);
+console.log('File Exists:', require('fs').existsSync(process.env.PUPPETEER_EXECUTABLE_PATH));
+
 // Konfigurasi Email
 const EMAIL_ADDRESS = process.env.EMAIL_ADDRESS || 'jo.enr.kus@gmail.com';
 const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD || 'hzpe dobn kkva bsic';
