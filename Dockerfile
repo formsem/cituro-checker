@@ -1,31 +1,18 @@
-# Gunakan base image Node.js 18 dengan Alpine (ringan)
-FROM node:18-alpine
+FROM node:18-bullseye-slim
 
-# Install Chromium dan dependencies yang diperlukan Puppeteer
-RUN apk add --no-cache \
+# Install dependencies untuk Chromium
+RUN apt-get update && \
+    apt-get install -y \
     chromium \
-    nss \
-    freetype \
-    harfbuzz \
-    ca-certificates \
-    ttf-freefont \
-    && echo "Chromium version:" $(chromium-browser --version)
+    fonts-freefont-ttf \
+    && rm -rf /var/lib/apt/lists/*
 
-# Set environment variable untuk Puppeteer
-ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser \
-    PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+# Set environment variables
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 
-# Buat direktori kerja
 WORKDIR /app
-
-# Copy package.json terlebih dahulu untuk caching
-COPY package.json package-lock.json ./
-
-# Install dependencies
-RUN npm install --production
-
-# Copy semua file project
+COPY package.json .
+RUN npm install
 COPY . .
 
-# Jalankan aplikasi
-CMD ["npm", "start"]
+CMD ["node", "check-cituro.js"]
