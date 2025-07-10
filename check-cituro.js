@@ -1,14 +1,8 @@
 import puppeteer from 'puppeteer';
 import nodemailer from 'nodemailer';
 
-
 const EMAIL_ADDRESS = process.env.EMAIL_ADDRESS;
 const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD;
-const browser = await puppeteer.launch({
-  headless: 'new',
-  args: ['--no-sandbox', '--disable-setuid-sandbox']
-});
-
 
 async function checkAppointments() {
   const browser = await puppeteer.launch({
@@ -73,4 +67,7 @@ async function sendNotification(eventList) {
   }
 }
 
-checkAppointments();
+// Bungkus pemanggilan dengan async IIFE
+(async () => {
+  await checkAppointments();
+})();
