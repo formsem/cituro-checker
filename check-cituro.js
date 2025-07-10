@@ -75,15 +75,15 @@ async function checkAvailability(page) {
 
 // Fungsi untuk memeriksa layanan tertentu
 async function checkService(service) {
-  const browser = await puppeteer.launch({
-  headless: true,
+ const browser = await puppeteer.launch({
+  headless: 'new', // mode baru lebih stabil
   args: [
     '--no-sandbox',
     '--disable-setuid-sandbox',
-    '--disable-dev-shm-usage',
-    '--single-process'
+    '--disable-dev-shm-usage', // penting untuk Docker
+    '--disable-gpu'
   ],
-  executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/google-chrome'
+  executablePath: process.env.PUPPETEER_EXECUTABLE_PATH
 });
   
   const page = await browser.newPage();
