@@ -14,6 +14,9 @@ RUN apt-get update && \
 
 ENV PUPPETEER_EXECUTABLE_PATH="/usr/bin/google-chrome"
 
+RUN ls -la /usr/bin/google-chrome* # Verifikasi path
+RUN google-chrome --version # Verifikasi instalasi
+
 WORKDIR /app
 COPY package*.json ./
 RUN npm install
