@@ -1,21 +1,18 @@
-FROM node:18-bullseye-slim
+FROM node:20-bullseye
 
-# Install Chromium dan dependencies
+# Install Chrome Latest
 RUN apt-get update && \
-    apt-get install -y \
-    wget \
-    gnupg \
-    && wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
-    && sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' \
-    && apt-get update \
-    && apt-get install -y google-chrome-stable fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-kacst fonts-freefont-ttf \
-    --no-install-recommends \
-    && rm -rf /var/lib/apt/lists/*
+    apt-get install -y wget && \
+    wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && \
+    apt install -y ./google-chrome-stable_current_amd64.deb && \
+    rm google-chrome-stable_current_amd64.deb
+
+# Verifikasi
+RUN ls -la /usr/bin/google-chrome* && \
+    google-chrome --version && \
+    which google-chrome
 
 ENV PUPPETEER_EXECUTABLE_PATH="/usr/bin/google-chrome"
-
-RUN ls -la /usr/bin/google-chrome* # Verifikasi path
-RUN google-chrome --version # Verifikasi instalasi
 
 WORKDIR /app
 COPY package*.json ./
