@@ -1,5 +1,6 @@
-const puppeteer = require('puppeteer');
-const nodemailer = require('nodemailer');
+import puppeteer from 'puppeteer';
+import nodemailer from 'nodemailer';
+
 
 const EMAIL_ADDRESS = process.env.EMAIL_ADDRESS;
 const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD;
